@@ -18,6 +18,7 @@ export const SMSForm = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [ticketId, setTicketId] = useState("");
+  const [toNumber, setToNumber] = useState("");
   const [messageText, setMessageText] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -50,7 +51,7 @@ export const SMSForm = () => {
     fetchCustomers();
   }, []);
 
-  const isFormValid = selectedCustomer && messageText.trim().length > 0;
+  const isFormValid = selectedCustomer && messageText.trim().length > 0 && (ticketId.trim().length > 0 || toNumber.trim().length > 0);
 
   const handleSend = async () => {
     if (!isFormValid) return;
@@ -76,6 +77,7 @@ export const SMSForm = () => {
       // Reset form
       setSelectedCustomer("");
       setTicketId("");
+      setToNumber("");
       setMessageText("");
     } catch (error) {
       console.error("Error sending SMS:", error);
@@ -99,7 +101,7 @@ export const SMSForm = () => {
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="customer" className="text-sm font-medium">
-            Customer Name <span className="text-destructive">*</span>
+            Customer Name / From Number <span className="text-destructive">*</span>
           </Label>
           <Select 
             value={selectedCustomer} 
@@ -124,7 +126,7 @@ export const SMSForm = () => {
 
         <div className="space-y-2">
           <Label htmlFor="ticketId" className="text-sm font-medium">
-            Ticket ID <span className="text-muted-foreground text-xs">(optional)</span>
+            Ticket ID <span className="text-muted-foreground text-xs">(one required)</span>
           </Label>
           <Input
             id="ticketId"
@@ -132,6 +134,20 @@ export const SMSForm = () => {
             placeholder="Enter ticket ID"
             value={ticketId}
             onChange={(e) => setTicketId(e.target.value)}
+            className="transition-all focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="toNumber" className="text-sm font-medium">
+            To Number <span className="text-muted-foreground text-xs">(one required)</span>
+          </Label>
+          <Input
+            id="toNumber"
+            type="text"
+            placeholder="Enter phone number"
+            value={toNumber}
+            onChange={(e) => setToNumber(e.target.value)}
             className="transition-all focus:ring-2 focus:ring-primary/20"
           />
         </div>
