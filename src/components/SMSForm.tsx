@@ -51,7 +51,7 @@ export const SMSForm = () => {
     fetchCustomers();
   }, []);
 
-  const isFormValid = selectedCustomer && messageText.trim().length > 0 && (ticketId.trim().length > 0 || toNumber.trim().length > 0);
+  const isFormValid = selectedCustomer && messageText.trim().length > 0 && (ticketId.trim().length > 0 || toNumber.trim().length > 1);
 
   const handleSend = async () => {
     if (!isFormValid) return;
