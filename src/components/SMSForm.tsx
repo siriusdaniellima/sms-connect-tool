@@ -145,9 +145,19 @@ export const SMSForm = () => {
           <Input
             id="toNumber"
             type="text"
-            placeholder="Enter phone number"
+            placeholder="+1234567890"
             value={toNumber}
-            onChange={(e) => setToNumber(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Always ensure the value starts with +
+              if (value === '' || value === '+') {
+                setToNumber('+');
+              } else if (!value.startsWith('+')) {
+                setToNumber('+' + value);
+              } else {
+                setToNumber(value);
+              }
+            }}
             className="transition-all focus:ring-2 focus:ring-primary/20"
           />
         </div>
