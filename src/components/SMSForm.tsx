@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { Send, MessageSquare } from "lucide-react";
 
@@ -21,6 +22,8 @@ export const SMSForm = () => {
   const [toNumber, setToNumber] = useState("");
   const [messageText, setMessageText] = useState("");
   const [sending, setSending] = useState(false);
+  const [showTicketTooltip, setShowTicketTooltip] = useState(false);
+  const [showPhoneTooltip, setShowPhoneTooltip] = useState(false);
 
   // Fetch customers from API
   useEffect(() => {
@@ -128,48 +131,83 @@ export const SMSForm = () => {
           <Label htmlFor="ticketId" className="text-sm font-medium">
             Ticket ID <span className="text-muted-foreground text-xs">(one required)</span>
           </Label>
-          <Input
-            id="ticketId"
-            type="text"
-            placeholder="Enter ticket ID"
-            value={ticketId}
-            onChange={(e) => {
-              const value = e.target.value;
-              // Only allow numbers
-              if (value === '' || /^\d+$/.test(value)) {
-                setTicketId(value);
-              }
-            }}
-            className="transition-all focus:ring-2 focus:ring-primary/20"
-          />
+          <TooltipProvider>
+            <Tooltip open={showTicketTooltip}>
+              <TooltipTrigger asChild>
+                <Input
+                  id="ticketId"
+                  type="text"
+                  placeholder="Enter ticket ID"
+                  value={ticketId}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Only allow numbers
+                    if (value === '' || /^\d+$/.test(value)) {
+                      setTicketId(value);
+                      setShowTicketTooltip(false);
+                    } else {
+                      setShowTicketTooltip(true);
+                      setTimeout(() => setShowTicketTooltip(false), 2000);
+                    }
+                  }}
+                  className="transition-all focus:ring-2 focus:ring-primary/20"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Only numbers are accepted</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="toNumber" className="text-sm font-medium">
             To Number <span className="text-muted-foreground text-xs">(one required)</span>
           </Label>
-          <Input
-            id="toNumber"
-            type="text"
-            placeholder="+1234567890"
-            value={toNumber}
-            onChange={(e) => {
-              const value = e.target.value;
-              // Always ensure the value starts with + and only contains numbers after
-              if (value === '' || value === '+') {
-                setToNumber('+');
-              } else if (!value.startsWith('+')) {
-                // If user tries to type without +, add it
-                const numbers = value.replace(/\D/g, '');
-                setToNumber('+' + numbers);
-              } else {
-                // Only allow + followed by numbers
-                const numbers = value.slice(1).replace(/\D/g, '');
-                setToNumber('+' + numbers);
-              }
-            }}
-            className="transition-all focus:ring-2 focus:ring-primary/20"
-          />
+          <TooltipProvider>
+            <Tooltip open={showPhoneTooltip}>
+              <TooltipTrigger asChild>
+                <Input
+                  id="toNumber"
+                  type="text"
+                  placeholder="+1234567890"
+                  value={toNumber}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const hadInvalidChar = /[^\d+]/.test(value);
+                    
+                    // Always ensure the value starts with + and only contains numbers after
+                    if (value === '' || value === '+') {
+                      setToNumber('+');
+                      setShowPhoneTooltip(false);
+                    } else if (!value.startsWith('+')) {
+                      // If user tries to type without +, add it
+                      const numbers = value.replace(/\D/g, '');
+                      setToNumber('+' + numbers);
+                      if (hadInvalidChar) {
+                        setShowPhoneTooltip(true);
+                        setTimeout(() => setShowPhoneTooltip(false), 2000);
+                      }
+                    } else {
+                      // Only allow + followed by numbers
+                      const numbers = value.slice(1).replace(/\D/g, '');
+                      setToNumber('+' + numbers);
+                      if (hadInvalidChar) {
+                        setShowPhoneTooltip(true);
+                        setTimeout(() => setShowPhoneTooltip(false), 2000);
+                      } else {
+                        setShowPhoneTooltip(false);
+                      }
+                    }
+                  }}
+                  className="transition-all focus:ring-2 focus:ring-primary/20"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Only numbers are accepted</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <div className="space-y-2">
