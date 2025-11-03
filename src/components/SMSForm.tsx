@@ -133,7 +133,13 @@ export const SMSForm = () => {
             type="text"
             placeholder="Enter ticket ID"
             value={ticketId}
-            onChange={(e) => setTicketId(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Only allow numbers
+              if (value === '' || /^\d+$/.test(value)) {
+                setTicketId(value);
+              }
+            }}
             className="transition-all focus:ring-2 focus:ring-primary/20"
           />
         </div>
@@ -149,13 +155,17 @@ export const SMSForm = () => {
             value={toNumber}
             onChange={(e) => {
               const value = e.target.value;
-              // Always ensure the value starts with +
+              // Always ensure the value starts with + and only contains numbers after
               if (value === '' || value === '+') {
                 setToNumber('+');
               } else if (!value.startsWith('+')) {
-                setToNumber('+' + value);
+                // If user tries to type without +, add it
+                const numbers = value.replace(/\D/g, '');
+                setToNumber('+' + numbers);
               } else {
-                setToNumber(value);
+                // Only allow + followed by numbers
+                const numbers = value.slice(1).replace(/\D/g, '');
+                setToNumber('+' + numbers);
               }
             }}
             className="transition-all focus:ring-2 focus:ring-primary/20"
